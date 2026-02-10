@@ -38,7 +38,7 @@ StopWhenUnneeded=true
 Type=simple
 RuntimeDirectory=virtiofsd
 PIDFile=/run/virtiofsd/.run.virtiofsd.%i-[% share_id %].sock.pid
-ExecStart=/usr/libexec/virtiofsd --log-level debug --socket-path /run/virtiofsd/%i-[% share_id %].sock --shared-dir [% share %] --cache=auto --announce-submounts --inode-file-handles=mandatory
+ExecStart=/usr/libexec/virtiofsd --socket-path /run/virtiofsd/%i-[% share_id %].sock --shared-dir [% share %] --cache=auto --announce-submounts --inode-file-handles=mandatory
 
 [Install]
 RequiredBy=%i.scope\n";
@@ -75,7 +75,7 @@ if ($phase eq 'pre-start') {
     }
     system("/usr/bin/systemctl start $unit_name\@$vmid.service");
     $vfs_args .= " -chardev socket,id=char$char_id,path=/run/virtiofsd/$vmid-$share_id.sock";
-    $vfs_args .= " -device vhost-user-fs-pci,chardev=char$char_id,tag=$vmid-$share_id";
+    $vfs_args .= " -device vhost-user-fs-pci,chardev=char$char_id,tag=$vmid-$share_id,queue-size=1024";
     $char_id += 1;
   }
 
